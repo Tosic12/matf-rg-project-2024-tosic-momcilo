@@ -26,6 +26,7 @@
 [ ] Parallax Mapping
 
 ### Group B:
+
 [ ] Bloom with the use of HDR  
 [ ] Deferred Shading  
 [ ] Point Shadows  
@@ -37,12 +38,8 @@
 
 ## Models:
 
-[link1]   
-[link2]
-
 ## Textures
 
-[link1]  
-[link2]
+https://svs.gsfc.nasa.gov/4851 - Skybox (made into a cubemap using https://jaxry.github.io/panorama-to-cubemap/)
 
 {OTHER-RESOURCES}

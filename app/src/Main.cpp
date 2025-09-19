@@ -1,8 +1,6 @@
 #include <engine/core/Engine.hpp>
+#include <app/AsteroidApp.hpp>
 
-/**
- * Start here...
- */
 int main(int argc, char** argv) {
-    return 0;
+    return std::make_unique<engine::asteroid::app::AsteroidApp>()->run(argc, argv);
 }
