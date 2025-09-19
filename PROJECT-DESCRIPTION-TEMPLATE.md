@@ -38,6 +38,8 @@
 
 ## Models:
 
+https://www.turbosquid.com/3d-models/rocky-asteroid-4-3d-model-1406799
+
 ## Textures
 
 https://svs.gsfc.nasa.gov/4851 - Skybox (made into a cubemap using https://jaxry.github.io/panorama-to-cubemap/)
