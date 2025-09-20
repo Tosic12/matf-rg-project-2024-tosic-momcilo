@@ -69,6 +69,14 @@ void MainController::draw_asteroid() {
     shader->set_mat4("view", graphics->camera()
                                      ->view_matrix());
     shader->set_mat4("model", scale(glm::mat4(1.0f), glm::vec3(m_asteroid_scale)));
+    shader->set_vec3("viewPos", graphics->camera()->Position);
+	shader->set_vec3("dirLight.direction", glm::vec3{0, 1, -1});
+    shader->set_vec3("dirLight.ambient", glm::vec3(0.3f, 0.3f, 0.3f));
+    shader->set_vec3("dirLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader->set_vec3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse", "./resources/models/asteroid/diffuse.png");
+    texture->bind_index(0);
+    shader->set_sampler("material.diffuse", 0);
     asteroid->draw(shader);
 }
 
