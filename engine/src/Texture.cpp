@@ -23,6 +23,10 @@ void Texture::bind(int32_t sampler) {
     glBindTexture(GL_TEXTURE_2D, m_id);
 }
 
+void Texture::bind_index(int32_t sampler_index) {
+     bind(sampler_index + GL_TEXTURE0);
+}
+
 std::string_view Texture::uniform_name_convention(TextureType type) {
     switch (type) {
         case TextureType::Diffuse: return "texture_diffuse";
