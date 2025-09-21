@@ -8,6 +8,10 @@
       "diamond": {
         "path": "diamond/diamond.obj",
         "flip_uvs": false
+      },
+      "spaceship": {
+        "path": "spaceship/Intergalactic_Spaceship-(Wavefront).obj",
+        "flip_uvs": false
       }
     }
   },

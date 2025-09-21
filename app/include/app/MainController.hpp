@@ -39,9 +39,11 @@ private:
 
     void draw_diamond();
 
+    void draw_spaceship();
+
     void update_camera();
 
-    engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, float rot_x, float rot_y, float rot_z, const glm::vec3& scale);
+    engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale);
 
     float m_asteroid_scale{0.2f};
 
@@ -49,8 +51,9 @@ private:
     glm::vec3 m_diamond_pos{-3.4f, -0.7f, 4.0f};
     glm::vec3 m_diamond_scale{0.03f};
 
-    glm::vec3 m_spaceship_pos{-0.4f, -0.3f, 0.6f};
-    glm::vec3 m_spaceship_scale{0.15f};
+    glm::vec3 m_spaceship_pos{0.0f, -20.0f, 0.0f};
+    glm::vec3 m_spaceship_rot{0.0f, 3.14f, 0.0f};
+    glm::vec3 m_spaceship_scale{0.01f};
 
     glm::vec3 m_dir_light_direction{0, 1, -1};
     glm::vec3 m_dir_light_ambient{0.3f, 0.3f, 0.3f};

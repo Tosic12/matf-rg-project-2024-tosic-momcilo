@@ -40,6 +40,7 @@
 
 https://www.turbosquid.com/3d-models/rocky-asteroid-4-3d-model-1406799 - asteroid
 https://www.turbosquid.com/3d-models/blue-diamond-3d-model-1362791 - diamond
+https://drive.google.com/drive/folders/1fzMwpNpkYmAu--jer71HfRSx0LWe7XJs - spaceship
 
 ## Textures
 
@@ -47,4 +48,5 @@ https://svs.gsfc.nasa.gov/4851 - Skybox (made into a cubemap using https://jaxry
 https://www.turbosquid.com/3d-models/rocky-asteroid-4-3d-model-1406799 - diffuse asteroid texture
 https://media.istockphoto.com/id/1144905390/photo/vintage-green-background-rough-painted-wall-of-emerald-color-imperfect-plane-of-virid-colored.jpg?s=612x612&w=0&k=20&c=NxvqOSSRi9fOaomt2fqZOym9OJDvjn7L9pfh6jR6slg= -
 green gem texture
+https://drive.google.com/drive/folders/1fzMwpNpkYmAu--jer71HfRSx0LWe7XJs - spaceship texture
 {OTHER-RESOURCES}
