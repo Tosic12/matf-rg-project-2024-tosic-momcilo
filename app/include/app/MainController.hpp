@@ -60,6 +60,14 @@ private:
     glm::vec3 m_dir_light_diffuse{1.0f, 1.0f, 1.0f};
     glm::vec3 m_dir_light_specular{1.0f, 1.0f, 1.0f};
 
+    glm::vec3 m_point_light_ambient = glm::vec3(0.05f);
+    glm::vec3 m_point_light_diffuse = glm::vec3{10.0f, 10.0f, 0.0f};
+    glm::vec3 m_point_light_specular = glm::vec3{10.0f, 10.0f, 0.0f};
+
+    float m_point_light_constant = 1.0f;
+    float m_point_light_linear = 0.09f;
+    float m_point_light_quadratic = 0.032f;
+
     float m_camera_negz{0.25f};
     float m_camera_speed{0.1f};
     bool m_draw_gui{false};

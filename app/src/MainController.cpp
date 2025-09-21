@@ -73,6 +73,15 @@ engine::resources::Shader* MainController::init_shader_with_lights(const glm::ve
     shader->set_vec3("dirLight.diffuse", m_dir_light_diffuse);
     shader->set_vec3("dirLight.specular", m_dir_light_specular);
 
+    shader->set_vec3("pointLight.position",  m_spaceship_pos);
+    shader->set_vec3("pointLight.ambient",   m_point_light_ambient);
+    shader->set_vec3("pointLight.diffuse",   m_point_light_diffuse);
+    shader->set_vec3("pointLight.specular",  m_point_light_specular);
+
+    shader->set_float("pointLight.constant",  m_point_light_constant);
+    shader->set_float("pointLight.linear",    m_point_light_linear);
+    shader->set_float("pointLight.quadratic", m_point_light_quadratic);
+
     glm::mat4 model;
 	model = scale(glm::mat4(1.0f), model_scale);
     model = rotate(model, rot[0], AXES[0]);
@@ -147,27 +156,31 @@ void MainController::update_camera() {
                 .state() == engine::platform::Key::State::Pressed) {
         camera->rotate_camera(mouse.dx, mouse.dy);
     }
-    if (platform->key(engine::platform::KEY_Q)
-                .state() == engine::platform::Key::State::Pressed) {
-        m_spaceship_rot.x += dt;
-    }
-    if (platform->key(engine::platform::KEY_E)
-                .state() == engine::platform::Key::State::Pressed) {
-        m_spaceship_rot.x += dt;
-    }
+    glm::vec3 delta_pos{0};
+	float dt_space = dt / m_spaceship_scale.x;
     if (platform->key(engine::platform::KEY_LEFT)
                 .state() == engine::platform::Key::State::Pressed) {
-        m_spaceship_rot.y += dt;
+        delta_pos.x += dt_space;
     }
     if (platform->key(engine::platform::KEY_RIGHT)
                 .state() == engine::platform::Key::State::Pressed) {
-        m_spaceship_rot.y -= dt;
+        delta_pos.x -= dt_space;
     }
-    glm::vec3 spaceship_dir{cos(m_spaceship_rot[0])*sin(m_spaceship_rot[1]), sin(m_spaceship_rot[0])*cos(m_spaceship_rot[1]), cos(m_spaceship_rot[0])*cos(m_spaceship_rot[1])};
-    glm::vec3 delta_pos{0};
+    if (platform->key(engine::platform::KEY_Q)
+                .state() == engine::platform::Key::State::Pressed) {
+        delta_pos.y -= dt_space;
+    }
+    if (platform->key(engine::platform::KEY_E)
+                .state() == engine::platform::Key::State::Pressed) {
+        delta_pos.y += dt_space;
+    }
     if (platform->key(engine::platform::KEY_UP)
                 .state() == engine::platform::Key::State::Pressed) {
-        delta_pos += dt/m_spaceship_scale.x * spaceship_dir;
+        delta_pos.z += dt_space;
+    }
+    if (platform->key(engine::platform::KEY_DOWN)
+                .state() == engine::platform::Key::State::Pressed) {
+        delta_pos.z -= dt_space;
     }
     if (glm::length(m_spaceship_pos + delta_pos) >= 19.5f) { // distance from the asteroid
     	m_spaceship_pos += delta_pos;
