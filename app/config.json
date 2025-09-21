@@ -4,6 +4,10 @@
       "asteroid": {
         "path": "asteroid/Rocky_Asteroid_4.obj",
         "flip_uvs": false
+      },
+      "diamond": {
+        "path": "diamond/diamond.obj",
+        "flip_uvs": false
       }
     }
   },

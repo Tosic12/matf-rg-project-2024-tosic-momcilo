@@ -1,7 +1,5 @@
 #include <memory>
 #include <spdlog/spdlog.h>
-#include <engine/core/Engine.hpp>
-#include <engine/graphics/GraphicsController.hpp>
 #include <app/MainController.hpp>
 #include <app/GUIController.hpp>
 
@@ -53,6 +51,7 @@ void MainController::begin_draw() {
 
 void MainController::draw() {
     draw_asteroid();
+    draw_diamond();
     draw_skybox();
 }
 
@@ -60,24 +59,50 @@ void MainController::end_draw() {
     engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers();
 }
 
-void MainController::draw_asteroid() {
+engine::resources::Shader* MainController::init_shader_with_lights() {
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
     auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader("basic");
-    auto asteroid = engine::core::Controller::get<engine::resources::ResourcesController>()->model("asteroid");
     shader->use();
     shader->set_mat4("projection", graphics->projection_matrix());
     shader->set_mat4("view", graphics->camera()
                                      ->view_matrix());
-    shader->set_mat4("model", scale(glm::mat4(1.0f), glm::vec3(m_asteroid_scale)));
     shader->set_vec3("viewPos", graphics->camera()->Position);
-	shader->set_vec3("dirLight.direction", glm::vec3{0, 1, -1});
-    shader->set_vec3("dirLight.ambient", glm::vec3(0.3f, 0.3f, 0.3f));
-    shader->set_vec3("dirLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-    shader->set_vec3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	shader->set_vec3("dirLight.direction", m_dir_light_direction);
+    shader->set_vec3("dirLight.ambient", m_dir_light_ambient);
+    shader->set_vec3("dirLight.diffuse", m_dir_light_diffuse);
+    shader->set_vec3("dirLight.specular", m_dir_light_specular);
+
+    return shader;
+}
+
+void MainController::draw_asteroid() {
+    auto shader = init_shader_with_lights();
+    auto asteroid = engine::core::Controller::get<engine::resources::ResourcesController>()->model("asteroid");
+
+    shader->set_mat4("model", scale(glm::mat4(1.0f), glm::vec3(m_asteroid_scale)));
+
     auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse", "./resources/models/asteroid/diffuse.png");
     texture->bind_index(0);
     shader->set_sampler("material.diffuse", 0);
     asteroid->draw(shader);
+}
+
+void MainController::draw_diamond() {
+    auto shader = init_shader_with_lights();
+    auto diamond = engine::core::Controller::get<engine::resources::ResourcesController>()->model("diamond");
+    glm::mat4 model;
+    model = scale(glm::mat4(1.0f), glm::vec3(m_asteroid_scale));
+    model = rotate(model, m_diamond_rot[0], AXES[0]);
+    model = rotate(model, m_diamond_rot[1], AXES[1]);
+    model = rotate(model, m_diamond_rot[2], AXES[2]);
+    model = translate(model, m_diamond_pos);
+    model = scale(model, m_diamond_scale);
+    shader->set_mat4("model", model);
+
+    auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse_diamond", "./resources/textures/green_gem.jpg");
+    texture->bind_index(1);
+    shader->set_sampler("material.diffuse", 1);
+    diamond->draw(shader);
 }
 
 void MainController::draw_skybox() {
