@@ -41,19 +41,25 @@ private:
 
     void draw_spaceship();
 
+    void draw_fuel_ball();
+
     void update_camera();
 
-    engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale);
+    engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale, const std::string& name = "basic");
 
     float m_asteroid_scale{0.2f};
 
     glm::vec3 m_diamond_rot{0.1f, 0.2f, -0.3f};
-    glm::vec3 m_diamond_pos{-3.4f, -0.7f, 4.0f};
+    glm::vec3 m_diamond_pos{-0.12f, -0.015f, 0.115f};
     glm::vec3 m_diamond_scale{0.03f};
 
-    glm::vec3 m_spaceship_pos{0.0f, -20.0f, 0.0f};
-    glm::vec3 m_spaceship_rot{0.0f, 3.14f, 0.0f};
+    glm::vec3 m_spaceship_pos{0.0f, -0.2f, 0.0f};
+    glm::vec3 m_spaceship_rot{0.0f, 0.0f, 0.0f};
     glm::vec3 m_spaceship_scale{0.01f};
+
+    glm::vec3 m_fuelball_scale{0.0005f};
+    float m_fuelball_init_scale = 0.0005f;
+    float m_fuelball_delta_z = 0.01f;
 
     glm::vec3 m_dir_light_direction{0, 1, -1};
     glm::vec3 m_dir_light_ambient{0.3f, 0.3f, 0.3f};
@@ -61,8 +67,10 @@ private:
     glm::vec3 m_dir_light_specular{1.0f, 1.0f, 1.0f};
 
     glm::vec3 m_point_light_ambient = glm::vec3(0.05f);
-    glm::vec3 m_point_light_diffuse = glm::vec3{10.0f, 10.0f, 0.0f};
-    glm::vec3 m_point_light_specular = glm::vec3{10.0f, 10.0f, 0.0f};
+    glm::vec3 m_point_light_diffuse = glm::vec3{5.0f, 5.0f, 0.0f};
+    glm::vec3 m_point_light_specular = glm::vec3{5.0f, 5.0f, 0.0f};
+
+    int m_fuel_sign = 1;
 
     float m_point_light_constant = 1.0f;
     float m_point_light_linear = 0.09f;

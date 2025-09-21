@@ -53,6 +53,7 @@ void MainController::draw() {
     draw_asteroid();
     draw_diamond();
     draw_spaceship();
+    draw_fuel_ball();
     draw_skybox();
 }
 
@@ -60,14 +61,16 @@ void MainController::end_draw() {
     engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers();
 }
 
-engine::resources::Shader* MainController::init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale) {
+engine::resources::Shader* MainController::init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale, const std::string& name) {
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
-    auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader("basic");
+    auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader(name);
     shader->use();
     shader->set_mat4("projection", graphics->projection_matrix());
     shader->set_mat4("view", graphics->camera()
                                      ->view_matrix());
     shader->set_vec3("viewPos", graphics->camera()->Position);
+    shader->set_vec3("color", glm::vec3{0.0f});
+
 	shader->set_vec3("dirLight.direction", m_dir_light_direction);
     shader->set_vec3("dirLight.ambient", m_dir_light_ambient);
     shader->set_vec3("dirLight.diffuse", m_dir_light_diffuse);
@@ -82,12 +85,13 @@ engine::resources::Shader* MainController::init_shader_with_lights(const glm::ve
     shader->set_float("pointLight.linear",    m_point_light_linear);
     shader->set_float("pointLight.quadratic", m_point_light_quadratic);
 
-    glm::mat4 model;
-	model = scale(glm::mat4(1.0f), model_scale);
+
+    glm::mat4 model = glm::mat4(1.0);
     model = rotate(model, rot[0], AXES[0]);
     model = rotate(model, rot[1], AXES[1]);
     model = rotate(model, rot[2], AXES[2]);
     model = translate(model, pos);
+    model = scale(model, model_scale);
     shader->set_mat4("model", model);
 
     return shader;
@@ -112,14 +116,20 @@ void MainController::draw_diamond() {
 }
 
 void MainController::draw_spaceship() {
-	auto shader = init_shader_with_lights(m_spaceship_pos, m_spaceship_rot, glm::vec3{m_spaceship_scale});
-    auto diamond = engine::core::Controller::get<engine::resources::ResourcesController>()->model("spaceship");
+	auto shader = init_shader_with_lights(m_spaceship_pos, glm::vec3{0}, glm::vec3{m_spaceship_scale});
+    auto spaceship = engine::core::Controller::get<engine::resources::ResourcesController>()->model("spaceship");
     auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse_spaceship", "./resources/models/spaceship/IntergalacticSpaceship_color_4.jpg");
     texture->bind_index(2);
     shader->set_sampler("material.diffuse", 2);
-    diamond->draw(shader);
+    spaceship->draw(shader);
 }
 
+void MainController::draw_fuel_ball() {
+	auto shader = init_shader_with_lights(m_spaceship_pos + glm::vec3{0, 0, m_fuelball_delta_z}, glm::vec3{0}, glm::vec3{m_fuelball_scale});
+    auto fuelball = engine::core::Controller::get<engine::resources::ResourcesController>()->model("fuelball");
+    shader->set_vec3("color", m_point_light_diffuse);
+    fuelball->draw(shader);
+}
 
 void MainController::draw_skybox() {
     auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader("skybox");
@@ -157,14 +167,14 @@ void MainController::update_camera() {
         camera->rotate_camera(mouse.dx, mouse.dy);
     }
     glm::vec3 delta_pos{0};
-	float dt_space = dt / m_spaceship_scale.x;
+	float dt_space = dt*2.0;
     if (platform->key(engine::platform::KEY_LEFT)
                 .state() == engine::platform::Key::State::Pressed) {
-        delta_pos.x += dt_space;
+        delta_pos.x -= dt_space;
     }
     if (platform->key(engine::platform::KEY_RIGHT)
                 .state() == engine::platform::Key::State::Pressed) {
-        delta_pos.x -= dt_space;
+        delta_pos.x += dt_space;
     }
     if (platform->key(engine::platform::KEY_Q)
                 .state() == engine::platform::Key::State::Pressed) {
@@ -176,14 +186,21 @@ void MainController::update_camera() {
     }
     if (platform->key(engine::platform::KEY_UP)
                 .state() == engine::platform::Key::State::Pressed) {
-        delta_pos.z += dt_space;
+        delta_pos.z -= dt_space;
     }
     if (platform->key(engine::platform::KEY_DOWN)
                 .state() == engine::platform::Key::State::Pressed) {
-        delta_pos.z -= dt_space;
+        delta_pos.z += dt_space;
     }
-    if (glm::length(m_spaceship_pos + delta_pos) >= 19.5f) { // distance from the asteroid
+    if (glm::length(m_spaceship_pos + delta_pos) >= 0.195f) { // distance from the asteroid
     	m_spaceship_pos += delta_pos;
+    }
+    m_fuelball_scale += m_fuel_sign*dt/1000;
+    if (m_fuelball_scale.x > m_fuelball_init_scale*1.1f){
+    	m_fuel_sign = -1;
+    }
+    if (m_fuelball_scale.x < 0.9f*m_fuelball_init_scale) {
+    	m_fuel_sign = 1;
     }
     camera->zoom(mouse.scroll);
 }

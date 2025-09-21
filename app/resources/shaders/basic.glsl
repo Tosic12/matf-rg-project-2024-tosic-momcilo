@@ -8,13 +8,16 @@ layout (location = 2) in vec2 aTexCoords;
 out vec2 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
+out vec3 Color;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 color;
 
 void main()
 {
+    Color = color;
     FragPos = vec3(model * vec4(aPos, 1.0));
     Normal = aNormal;
     TexCoords = aTexCoords;
@@ -29,6 +32,7 @@ out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
+in vec3 Color;
 
 uniform vec3 viewPos;
 
@@ -106,8 +110,11 @@ void main() {
     // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-
-    // Directional lighting
+    if (Color.x != 0 || Color.y != 0 || Color.z != 0){
+        FragColor = vec4(Color, 1.0);
+        return;
+    }
+    // Directional and point lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir) + CalcPointLight(pointLight, norm, FragPos, viewDir);
 
     FragColor = vec4(result, 1.0);
