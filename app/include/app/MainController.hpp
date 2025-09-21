@@ -41,13 +41,16 @@ private:
 
     void update_camera();
 
-    engine::resources::Shader* init_shader_with_lights();
+    engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, float rot_x, float rot_y, float rot_z, const glm::vec3& scale);
 
     float m_asteroid_scale{0.2f};
 
     glm::vec3 m_diamond_rot{0.1f, 0.2f, -0.3f};
-    glm::vec3 m_diamond_pos{-0.5f, -0.1f, 0.6f};
-    glm::vec3 m_diamond_scale{0.15f};
+    glm::vec3 m_diamond_pos{-3.4f, -0.7f, 4.0f};
+    glm::vec3 m_diamond_scale{0.03f};
+
+    glm::vec3 m_spaceship_pos{-0.4f, -0.3f, 0.6f};
+    glm::vec3 m_spaceship_scale{0.15f};
 
     glm::vec3 m_dir_light_direction{0, 1, -1};
     glm::vec3 m_dir_light_ambient{0.3f, 0.3f, 0.3f};

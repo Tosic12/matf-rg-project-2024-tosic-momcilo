@@ -59,7 +59,7 @@ void MainController::end_draw() {
     engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers();
 }
 
-engine::resources::Shader* MainController::init_shader_with_lights() {
+engine::resources::Shader* MainController::init_shader_with_lights(const glm::vec3& pos, float rot_x, float rot_y, float rot_z, const glm::vec3& model_scale) {
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
     auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader("basic");
     shader->use();
@@ -72,33 +72,29 @@ engine::resources::Shader* MainController::init_shader_with_lights() {
     shader->set_vec3("dirLight.diffuse", m_dir_light_diffuse);
     shader->set_vec3("dirLight.specular", m_dir_light_specular);
 
+    glm::mat4 model;
+	model = scale(glm::mat4(1.0f), model_scale);
+    model = rotate(model, rot_x, AXES[0]);
+    model = rotate(model, rot_y, AXES[1]);
+    model = rotate(model, rot_z, AXES[2]);
+    model = translate(model, pos);
+    shader->set_mat4("model", model);
+
     return shader;
 }
 
 void MainController::draw_asteroid() {
-    auto shader = init_shader_with_lights();
+    auto shader = init_shader_with_lights(glm::vec3{0.0f}, 0.0f, 0.0f, 0.0f, glm::vec3{m_asteroid_scale});
     auto asteroid = engine::core::Controller::get<engine::resources::ResourcesController>()->model("asteroid");
-
-    shader->set_mat4("model", scale(glm::mat4(1.0f), glm::vec3(m_asteroid_scale)));
-
-    auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse", "./resources/models/asteroid/diffuse.png");
+	auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse", "./resources/models/asteroid/diffuse.png");
     texture->bind_index(0);
     shader->set_sampler("material.diffuse", 0);
     asteroid->draw(shader);
 }
 
 void MainController::draw_diamond() {
-    auto shader = init_shader_with_lights();
+    auto shader = init_shader_with_lights(m_diamond_pos, m_diamond_rot[0], m_diamond_rot[1], m_diamond_rot[2], glm::vec3{m_diamond_scale});
     auto diamond = engine::core::Controller::get<engine::resources::ResourcesController>()->model("diamond");
-    glm::mat4 model;
-    model = scale(glm::mat4(1.0f), glm::vec3(m_asteroid_scale));
-    model = rotate(model, m_diamond_rot[0], AXES[0]);
-    model = rotate(model, m_diamond_rot[1], AXES[1]);
-    model = rotate(model, m_diamond_rot[2], AXES[2]);
-    model = translate(model, m_diamond_pos);
-    model = scale(model, m_diamond_scale);
-    shader->set_mat4("model", model);
-
     auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse_diamond", "./resources/textures/green_gem.jpg");
     texture->bind_index(1);
     shader->set_sampler("material.diffuse", 1);
