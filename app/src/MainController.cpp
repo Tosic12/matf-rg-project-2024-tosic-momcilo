@@ -1,5 +1,6 @@
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <imgui.h>
 #include <app/MainController.hpp>
 #include <app/GUIController.hpp>
 
@@ -20,7 +21,8 @@ void MainController::initialize() {
     engine::core::Controller::get<engine::platform::PlatformController>()->register_platform_event_observer(
             std::move(observer));
     auto camera = engine::core::Controller::get<engine::graphics::GraphicsController>()->camera();
-    camera->move_camera(engine::graphics::Camera::Movement::BACKWARD, m_camera_negz);
+    camera->move_camera(engine::graphics::Camera::Movement::BACKWARD, m_camera_neg_z);
+    camera->move_camera(engine::graphics::Camera::Movement::DOWN, m_camera_neg_y);
 }
 
 bool MainController::loop() {
@@ -43,6 +45,7 @@ void MainController::poll_events() {
 
 void MainController::update() {
     update_camera();
+    update_spaceship();
 }
 
 void MainController::begin_draw() {
@@ -55,6 +58,7 @@ void MainController::draw() {
     draw_spaceship();
     draw_fuel_ball();
     draw_skybox();
+    draw_gui_settings();
 }
 
 void MainController::end_draw() {
@@ -137,6 +141,60 @@ void MainController::draw_skybox() {
     engine::core::Controller::get<engine::graphics::GraphicsController>()->draw_skybox(shader, skybox_cube);
 }
 
+void MainController::draw_gui_settings() {
+    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    graphics->begin_gui();
+
+    {
+    ImGui::Begin("Lighting & Camera Settings");
+
+    ImGui::Text("Directional Light");
+    ImGui::InputFloat("Direction X", &m_dir_light_direction.x, m_light_settings_step);
+    ImGui::InputFloat("Direction Y", &m_dir_light_direction.y, m_light_settings_step);
+    ImGui::InputFloat("Direction Z", &m_dir_light_direction.z, m_light_settings_step);
+
+    ImGui::InputFloat("Ambient R", &m_dir_light_ambient.x, m_light_settings_step);
+    ImGui::InputFloat("Ambient G", &m_dir_light_ambient.y, m_light_settings_step);
+    ImGui::InputFloat("Ambient B", &m_dir_light_ambient.z, m_light_settings_step);
+
+    ImGui::InputFloat("Diffuse R", &m_dir_light_diffuse.x, m_light_settings_step);
+    ImGui::InputFloat("Diffuse G", &m_dir_light_diffuse.y, m_light_settings_step);
+    ImGui::InputFloat("Diffuse B", &m_dir_light_diffuse.z, m_light_settings_step);
+
+    ImGui::InputFloat("Specular R", &m_dir_light_specular.x, m_light_settings_step);
+    ImGui::InputFloat("Specular G", &m_dir_light_specular.y, m_light_settings_step);
+    ImGui::InputFloat("Specular B", &m_dir_light_specular.z, m_light_settings_step);
+
+    ImGui::Separator();
+
+    ImGui::Text("Point Light");
+
+    ImGui::InputFloat("Ambient R", &m_point_light_ambient.x, m_light_settings_step);
+    ImGui::InputFloat("Ambient G", &m_point_light_ambient.y, m_light_settings_step);
+    ImGui::InputFloat("Ambient B", &m_point_light_ambient.z, m_light_settings_step);
+
+    ImGui::InputFloat("Diffuse R", &m_point_light_diffuse.x, m_light_settings_step);
+    ImGui::InputFloat("Diffuse G", &m_point_light_diffuse.y, m_light_settings_step);
+    ImGui::InputFloat("Diffuse B", &m_point_light_diffuse.z, m_light_settings_step);
+
+    ImGui::InputFloat("Specular R", &m_point_light_specular.x, m_light_settings_step);
+    ImGui::InputFloat("Specular G", &m_point_light_specular.y, m_light_settings_step);
+    ImGui::InputFloat("Specular B", &m_point_light_specular.z, m_light_settings_step);
+
+    ImGui::InputFloat("Constant",  &m_point_light_constant, m_light_settings_step);
+    ImGui::InputFloat("Kl Component",    &m_point_light_linear, m_light_settings_step);
+    ImGui::InputFloat("Kq Component", &m_point_light_quadratic, m_light_settings_step);
+    ImGui::Separator();
+
+    ImGui::InputFloat("Camera Speed",    &m_camera_speed, m_speed_settings_step);
+    ImGui::InputFloat("Spaceship Speed", &m_spaceship_speed, m_speed_settings_step);
+
+    ImGui::End();
+    }
+
+    graphics->end_gui();
+}
+
 void MainController::update_camera() {
     auto gui = engine::core::Controller::get<GUIController>();
     if (gui->is_enabled()) {
@@ -166,8 +224,13 @@ void MainController::update_camera() {
                 .state() == engine::platform::Key::State::Pressed) {
         camera->rotate_camera(mouse.dx, mouse.dy);
     }
+    camera->zoom(mouse.scroll);
+}
+
+void MainController::update_spaceship(){
+    auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
     glm::vec3 delta_pos{0};
-	float dt_space = dt*2.0;
+	float dt_space = platform->dt() * m_spaceship_speed;
     if (platform->key(engine::platform::KEY_LEFT)
                 .state() == engine::platform::Key::State::Pressed) {
         delta_pos.x -= dt_space;
@@ -192,17 +255,16 @@ void MainController::update_camera() {
                 .state() == engine::platform::Key::State::Pressed) {
         delta_pos.z += dt_space;
     }
-    if (glm::length(m_spaceship_pos + delta_pos) >= 0.195f) { // distance from the asteroid
+    if (glm::length(m_spaceship_pos + delta_pos) >= 0.245f) { // distance from the asteroid
     	m_spaceship_pos += delta_pos;
     }
-    m_fuelball_scale += m_fuel_sign*dt/1000;
+    m_fuelball_scale += m_fuel_sign*dt_space/10000;
     if (m_fuelball_scale.x > m_fuelball_init_scale*1.1f){
     	m_fuel_sign = -1;
     }
     if (m_fuelball_scale.x < 0.9f*m_fuelball_init_scale) {
     	m_fuel_sign = 1;
     }
-    camera->zoom(mouse.scroll);
 }
 }
 

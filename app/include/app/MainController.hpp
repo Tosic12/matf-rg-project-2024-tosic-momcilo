@@ -43,7 +43,11 @@ private:
 
     void draw_fuel_ball();
 
+    void update_spaceship();
+
     void update_camera();
+
+    void draw_gui_settings();
 
     engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale, const std::string& name = "basic");
 
@@ -53,7 +57,7 @@ private:
     glm::vec3 m_diamond_pos{-0.12f, -0.015f, 0.115f};
     glm::vec3 m_diamond_scale{0.03f};
 
-    glm::vec3 m_spaceship_pos{0.0f, -0.2f, 0.0f};
+    glm::vec3 m_spaceship_pos{0.0f, -0.25f, 0.0f};
     glm::vec3 m_spaceship_rot{0.0f, 0.0f, 0.0f};
     glm::vec3 m_spaceship_scale{0.01f};
 
@@ -67,19 +71,24 @@ private:
     glm::vec3 m_dir_light_specular{1.0f, 1.0f, 1.0f};
 
     glm::vec3 m_point_light_ambient = glm::vec3(0.0f);
-    glm::vec3 m_point_light_diffuse = glm::vec3{5.0f, 5.0f, 0.0f};
-    glm::vec3 m_point_light_specular = glm::vec3{5.0f, 5.0f, 0.0f};
+    glm::vec3 m_point_light_diffuse = glm::vec3{2.0f, 2.0f, 0.0f};
+    glm::vec3 m_point_light_specular = glm::vec3{2.0f, 2.0f, 0.0f};
 
     int m_fuel_sign = 1;
 
     float m_point_light_constant = 1.0f;
-    float m_point_light_linear = 0.09f;
-    float m_point_light_quadratic = 0.032f;
+    float m_point_light_linear = 1.5f;
+    float m_point_light_quadratic = 2.0f;
 
-    float m_camera_negz{0.25f};
+    float m_camera_neg_z{0.25f};
+    float m_camera_neg_y{0.02f};
     float m_camera_speed{0.1f};
+    float m_spaceship_speed{0.5f};
     bool m_draw_gui{false};
     bool m_cursor_enabled{true};
+
+    float m_light_settings_step{0.05f};
+    float m_speed_settings_step{0.1f};
 
     static constexpr glm::vec3 AXES[3] = {glm::vec3{1, 0, 0}, glm::vec3{0, 1, 0}, glm::vec3{0, 0, 1}};
 };
