@@ -108,7 +108,7 @@ namespace engine::asteroid::app {
         float m_light_settings_step{0.05f};
         float m_speed_settings_step{0.1f};
 
-        float m_mat_specular_comp{0.1f};
+        float m_mat_specular_comp{0.04f};
         float m_mat_shininess_comp{0.2f};
 
         float m_current_time{0.0f};
