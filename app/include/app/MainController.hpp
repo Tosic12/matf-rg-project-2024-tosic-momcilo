@@ -35,21 +35,28 @@ private:
 
     void draw_skybox();
 
-    void draw_asteroid();
+    void draw_model(engine::resources::Shader* shader,
+                    const std::string& name,
+                    const std::string& texture,
+                    const std::string& path,
+                    const glm::vec3& pos,
+                    const glm::vec3& rot,
+                    const glm::vec3& scale,
+                    uint32_t texture_index);
 
-    void draw_diamond();
+    void set_shader_model(engine::resources::Shader* shader, const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale);
 
-    void draw_spaceship();
-
-    void draw_fuel_ball();
+    void draw_fuel_ball(engine::resources::Shader* shader);
 
     void update_spaceship();
 
     void update_camera();
 
+    void update_event(engine::resources::Shader* shader);
+
     void draw_gui_settings();
 
-    engine::resources::Shader* init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale, const std::string& name = "basic");
+    engine::resources::Shader* init_shader_with_lights();
 
     float m_asteroid_scale{0.2f};
 
@@ -74,6 +81,12 @@ private:
     glm::vec3 m_point_light_diffuse = glm::vec3{2.0f, 2.0f, 0.0f};
     glm::vec3 m_point_light_specular = glm::vec3{2.0f, 2.0f, 0.0f};
 
+    glm::vec3 m_mined_pos1 = glm::vec3{-0.25f, 0.27f, 0.1f};
+    glm::vec3 m_mined_pos2 = glm::vec3{0.27f, -0.2f, 0.1f};
+    glm::vec3 m_mined_scale = glm::vec3{0.01f};
+    bool m_mined = false;
+    bool m_app = false;
+
     int m_fuel_sign = 1;
 
     float m_point_light_constant = 1.0f;
@@ -89,6 +102,8 @@ private:
 
     float m_light_settings_step{0.05f};
     float m_speed_settings_step{0.1f};
+
+    float m_current_time{0.0f};
 
     static constexpr glm::vec3 AXES[3] = {glm::vec3{1, 0, 0}, glm::vec3{0, 1, 0}, glm::vec3{0, 0, 1}};
 };

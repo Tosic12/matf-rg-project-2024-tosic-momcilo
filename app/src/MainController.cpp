@@ -53,10 +53,11 @@ void MainController::begin_draw() {
 }
 
 void MainController::draw() {
-    draw_asteroid();
-    draw_diamond();
-    draw_spaceship();
-    draw_fuel_ball();
+    auto shader = init_shader_with_lights();
+    draw_model(shader, "asteroid", "", "./resources/models/asteroid/diffuse.png", glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{m_asteroid_scale}, 0);
+    draw_model(shader, "diamond", "green_gem", "", m_diamond_pos, m_diamond_rot, glm::vec3{m_diamond_scale}, 1);
+    draw_model(shader, "spaceship", "", "./resources/models/spaceship/IntergalacticSpaceship_color_4.jpg", m_spaceship_pos, glm::vec3{0}, glm::vec3{m_spaceship_scale}, 2);
+    draw_fuel_ball(shader);
     draw_skybox();
     draw_gui_settings();
 }
@@ -65,9 +66,9 @@ void MainController::end_draw() {
     engine::core::Controller::get<engine::platform::PlatformController>()->swap_buffers();
 }
 
-engine::resources::Shader* MainController::init_shader_with_lights(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale, const std::string& name) {
+engine::resources::Shader* MainController::init_shader_with_lights() {
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
-    auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader(name);
+    auto shader = engine::core::Controller::get<engine::resources::ResourcesController>()->shader("basic");
     shader->use();
     shader->set_mat4("projection", graphics->projection_matrix());
     shader->set_mat4("view", graphics->camera()
@@ -89,7 +90,10 @@ engine::resources::Shader* MainController::init_shader_with_lights(const glm::ve
     shader->set_float("pointLight.linear",    m_point_light_linear);
     shader->set_float("pointLight.quadratic", m_point_light_quadratic);
 
+    return shader;
+}
 
+void MainController::set_shader_model(engine::resources::Shader* shader, const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& model_scale){
     glm::mat4 model = glm::mat4(1.0);
     model = rotate(model, rot[0], AXES[0]);
     model = rotate(model, rot[1], AXES[1]);
@@ -97,39 +101,19 @@ engine::resources::Shader* MainController::init_shader_with_lights(const glm::ve
     model = translate(model, pos);
     model = scale(model, model_scale);
     shader->set_mat4("model", model);
-
-    return shader;
 }
 
-void MainController::draw_asteroid() {
-    auto shader = init_shader_with_lights(glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{m_asteroid_scale});
-    auto asteroid = engine::core::Controller::get<engine::resources::ResourcesController>()->model("asteroid");
-	auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse", "./resources/models/asteroid/diffuse.png");
-    texture->bind_index(0);
-    shader->set_sampler("material.diffuse", 0);
-    asteroid->draw(shader);
+void MainController::draw_model(engine::resources::Shader* shader, const std::string& name, const std::string& texture_name, const std::string& path, const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale, uint32_t texture_index) {
+    auto model = engine::core::Controller::get<engine::resources::ResourcesController>()->model(name);
+    auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture(texture_name, path);
+    set_shader_model(shader, pos, rot, scale);
+    texture->bind_index(texture_index);
+    shader->set_sampler("material.diffuse", texture_index);
+    model->draw(shader);
 }
 
-void MainController::draw_diamond() {
-    auto shader = init_shader_with_lights(m_diamond_pos, m_diamond_rot, glm::vec3{m_diamond_scale});
-    auto diamond = engine::core::Controller::get<engine::resources::ResourcesController>()->model("diamond");
-    auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse_diamond", "./resources/textures/green_gem.jpg");
-    texture->bind_index(1);
-    shader->set_sampler("material.diffuse", 1);
-    diamond->draw(shader);
-}
-
-void MainController::draw_spaceship() {
-	auto shader = init_shader_with_lights(m_spaceship_pos, glm::vec3{0}, glm::vec3{m_spaceship_scale});
-    auto spaceship = engine::core::Controller::get<engine::resources::ResourcesController>()->model("spaceship");
-    auto texture = engine::core::Controller::get<engine::resources::ResourcesController>()->texture("diffuse_spaceship", "./resources/models/spaceship/IntergalacticSpaceship_color_4.jpg");
-    texture->bind_index(2);
-    shader->set_sampler("material.diffuse", 2);
-    spaceship->draw(shader);
-}
-
-void MainController::draw_fuel_ball() {
-	auto shader = init_shader_with_lights(m_spaceship_pos + glm::vec3{0, 0, m_fuelball_delta_z}, glm::vec3{0}, glm::vec3{m_fuelball_scale});
+void MainController::draw_fuel_ball(engine::resources::Shader* shader) {
+    set_shader_model(shader, m_spaceship_pos + glm::vec3{0, 0, m_fuelball_delta_z}, glm::vec3{0}, glm::vec3{m_fuelball_scale});
     auto fuelball = engine::core::Controller::get<engine::resources::ResourcesController>()->model("fuelball");
     shader->set_vec3("color", m_point_light_diffuse);
     fuelball->draw(shader);
@@ -264,6 +248,19 @@ void MainController::update_spaceship(){
     }
     if (m_fuelball_scale.x < 0.9f*m_fuelball_init_scale) {
     	m_fuel_sign = 1;
+    }
+}
+
+void MainController::update_event(engine::resources::Shader* shader) {
+    auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
+    m_current_time += platform->dt();
+    if (!m_mined && platform->key(engine::platform::KEY_M)
+                .state() == engine::platform::Key::State::JustPressed) {
+        m_mined = true;
+        m_current_time = 0;
+    } else if(m_mined && m_current_time >= 2){
+        draw_model(shader, "diamond", "", "green_gem", m_mined_pos1, glm::vec3{0}, m_mined_scale, 3);
+        draw_model(shader, "diamond", "", "green_gem", m_mined_pos2, glm::vec3{0}, m_mined_scale, 3);
     }
 }
 }
