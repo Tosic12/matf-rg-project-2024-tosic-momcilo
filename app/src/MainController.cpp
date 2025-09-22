@@ -131,6 +131,8 @@ void MainController::draw_model(engine::resources::Shader *shader, const std::st
     shader->set_vec3("color", glm::vec3{0});// we are not using solid color mode
     texture->bind_index(texture_index);
     shader->set_sampler("material.diffuse", texture_index);
+    shader->set_float("material.specular", m_mat_specular_comp);
+    shader->set_float("material.shininess", m_mat_shininess_comp);
     model->draw(shader);
 }
 
