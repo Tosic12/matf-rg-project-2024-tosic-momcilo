@@ -112,7 +112,7 @@ void main() {
     vec3 viewDir = normalize(viewPos - FragPos);
     if (Color.x != 0 || Color.y != 0 || Color.z != 0){
         if (Normal.z > 0.1)
-            FragColor = vec4(Color*Normal.z, 0);
+            FragColor = vec4(Color*Normal.z, 0); // creates a dark effect across the model where z normals change
         else
             FragColor = vec4(Color*0.1, 0);
         return;
