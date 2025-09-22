@@ -111,6 +111,13 @@ public:
     void set_mat4(const std::string &name, const glm::mat4 &mat) const;
 
     /**
+	* @brief Sets a sampler uniform value (sampler must be bound to texture at time of shader compilation).
+	* @param name The name of the uniform.
+	* @param sampler The value (sampler index) to set.
+	*/
+	void set_sampler(const std::string& name, int32_t sampler) const;
+
+    /**
     * @brief Returns the name of the shader program by which it can be referenced using the @ref engine::resources::ResourcesController::shader function.
     * @returns The name of the shader.
     */

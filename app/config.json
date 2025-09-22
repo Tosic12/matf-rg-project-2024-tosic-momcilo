@@ -1,11 +1,27 @@
 {
   "resources": {
     "models": {
+      "asteroid": {
+        "path": "asteroid/Rocky_Asteroid_4.obj",
+        "flip_uvs": false
+      },
+      "diamond": {
+        "path": "diamond/diamond.obj",
+        "flip_uvs": false
+      },
+      "spaceship": {
+        "path": "spaceship/Intergalactic_Spaceship-(Wavefront).obj",
+        "flip_uvs": false
+      },
+      "fuelball": {
+        "path": "fuel_ball/15737_Porous_Sphere_v1_NEW.obj",
+        "flip_uvs": false
+      }
     }
   },
   "window": {
-    "height": 600,
-    "title": "Hello, window!",
-    "width": 800
+    "height": 1000,
+    "title": "Diamond mining",
+    "width": 1000
   }
 }

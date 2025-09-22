@@ -75,6 +75,12 @@ public:
     void bind(int32_t sampler);
 
     /**
+    * @brief Binds the texture to a given sampler index.
+    * @param sampler The index of the sampler to bind the texture to.
+    */
+    void bind_index(int32_t sampler_index);
+
+    /**
     * @brief Returns the path to the texture file from which the texture was loaded.
     * @returns The path to the texture file.
     */

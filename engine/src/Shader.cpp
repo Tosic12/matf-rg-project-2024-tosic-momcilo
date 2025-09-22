@@ -61,6 +61,11 @@ void Shader::set_mat4(const std::string &name, const glm::mat4 &mat) const {
     CHECKED_GL_CALL(glUniformMatrix4fv, location, 1, GL_FALSE, &mat[0][0]);
 }
 
+void Shader::set_sampler(const std::string &name, int32_t sampler) const {
+    uint32_t location = CHECKED_GL_CALL(glGetUniformLocation, m_shader_id, name.c_str());
+    CHECKED_GL_CALL(glUniform1i, location, sampler);
+}
+
 Shader::Shader(unsigned shader_id, std::string name, std::string source, std::filesystem::path source_path) :
         m_shader_id(shader_id)
         , m_name(std::move(name))
